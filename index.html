@@ -42,7 +42,7 @@
 <div class="wrap">
   <div class="title">
     <div>
-      <h1>Dashboard — Estatísticas de Crédito (SGS/BCB) <span style="font-size:12px;color:#92a0b3; font-weight:600;">(web v5.2)</span></h1>
+      <h1>Dashboard — Estatísticas de Crédito (SGS/BCB) <span style="font-size:12px;color:#92a0b3; font-weight:600;">(web v4.1)</span></h1>
       <div class="sub">3 gráficos por linha • atualização ao abrir • JGP</div>
     </div>
     <div class="status" id="status">Pronto.</div>
@@ -70,47 +70,6 @@
   const refreshBtn = document.getElementById('refresh');
 
   function setStatus(msg){ statusEl.textContent = msg; }
-
-  window.addEventListener('error', (e) => {
-    try {
-      const msg = e && e.message ? e.message : 'Erro JavaScript';
-      setStatus('Erro: ' + msg);
-    } catch(_) {}
-  });
-
-
-  function showBanner(msg){
-    const b = document.createElement('div');
-    b.style.margin = '10px 0 0 0';
-    b.style.padding = '10px 12px';
-    b.style.borderRadius = '12px';
-    b.style.border = '1px solid rgba(255,160,90,0.35)';
-    b.style.background = 'rgba(255,160,90,0.10)';
-    b.style.color = '#ffd2a8';
-    b.style.fontSize = '13px';
-    b.style.lineHeight = '1.35';
-    b.textContent = msg;
-    const container = document.querySelector('.container');
-    if(container){
-      const header = container.querySelector('.header');
-      if(header) header.appendChild(b);
-      else container.prepend(b);
-    }
-  }
-
-  (function preflightHints(){
-    try{
-      const href = String(window.location.href || '');
-      const proto = String(window.location.protocol || '');
-      if(href.toLowerCase().includes('.zip') || href.toLowerCase().includes('compressed') ){
-        showBanner("Você abriu o index.html direto de dentro do ZIP. Clique em 'Extrair tudo' (Extract all) e abra o index.html da pasta extraída.");
-      }
-      if(proto === 'file:'){
-        showBanner("Abrindo local (file://) pode bloquear a conexão com a API em alguns PCs. Para funcionar sempre, use o link do GitHub Pages (https://...) ou rode um servidor local.");
-      }
-    }catch(_){}
-  })();
-
   function fmtBR(x, dec=2, suffix=""){ if(x===null||x===undefined||Number.isNaN(x)) return "—"; return x.toLocaleString('pt-BR', {minimumFractionDigits:dec, maximumFractionDigits:dec})+suffix; }
   function fmtDateBR(iso){ const d=new Date(iso); return d.toLocaleDateString('pt-BR'); }
   function maxIso(a,b){ if(!a) return b; if(!b) return a; return a>b?a:b; }
