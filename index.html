@@ -55,9 +55,6 @@
       <span class="pill">YoY 12m = variação vs 12 obs atrás</span>
       <button id="refresh" style="margin-left:auto;">Atualizar agora</button>
     </div>
-    <div class="status" id="corswarn" style="margin-top:10px; display:none;">
-      ⚠️ Se algum gráfico não carregar, pode ser bloqueio de acesso direto (CORS). Aí você vai precisar hospedar com “proxy” (eu te passo o jeito).
-    </div>
   </div>
 
   <div id="blocks"></div>
@@ -89,17 +86,14 @@
   }
 
   async function apiGet(url){
-    let res;
-    try{ res = await fetch(url); }
-    catch(e){ throw new Error("fetch_failed"); }
+    const res = await fetch(url);
     if(!res.ok) throw new Error("bad_response");
     return await res.json();
   }
 
-  const CHARTS = [{"id": "g1", "title": "Saldo total de crédito", "series": [{"code": 20539, "name": "20539"}], "transform": "level", "unit": "raw", "block": "Saldos do Sistema", "scale": 1.0, "start_override": null}, {"id": "g2", "title": "Saldo total de crédito — YoY 12m", "series": [{"code": 20539, "name": "20539"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "scale": 1.0, "start_override": "2000-01-01"}, {"id": "g3", "title": "Saldo com recursos livres", "series": [{"code": 20542, "name": "20542"}], "transform": "level", "unit": "raw", "block": "Saldos do Sistema", "scale": 1.0, "start_override": null}, {"id": "g4", "title": "Saldo com recursos livres — YoY 12m", "series": [{"code": 20542, "name": "20542"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "scale": 1.0, "start_override": null}, {"id": "g5", "title": "Saldo com recursos livres (PF x PJ) — YoY 12m", "series": [{"code": 20543, "name": "PF"}, {"code": 20570, "name": "PJ"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "scale": 1.0, "start_override": null}, {"id": "g6", "title": "Saldo por porte de empresa — YoY 12m", "series": [{"code": 27702, "name": "Grande"}, {"code": 27701, "name": "Micro, Pequena e Média (MPMe)"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "scale": 1.0, "start_override": null}, {"id": "g10", "title": "Inadimplência recursos livres", "series": [{"code": 21085, "name": "Total"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "scale": 0.01, "start_override": null}, {"id": "g11", "title": "Inadimplência recursos livres (PF)", "series": [{"code": 21112, "name": "PF"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "scale": 0.01, "start_override": null}, {"id": "g12", "title": "Inadimplência recursos livres (PJ)", "series": [{"code": 21086, "name": "PJ"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "scale": 0.01, "start_override": null}, {"id": "g13", "title": "Inadimplência por porte da empresa (Grande x MPMe)", "series": [{"code": 27704, "name": "Grande"}, {"code": 27703, "name": "Micro, Pequena e Média (MPMe)"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "scale": 0.01, "start_override": null}, {"id": "g15", "title": "Endividamento das famílias", "series": [{"code": 29037, "name": "29037"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "scale": 0.01, "start_override": null}, {"id": "g16", "title": "Comprometimento de renda das famílias - Serviço da dívida", "series": [{"code": 29034, "name": "29034"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "scale": 0.01, "start_override": null}, {"id": "g7", "title": "Spread médio das operações com recursos livres", "series": [{"code": 20786, "name": "Total"}], "transform": "level", "unit": "pct", "block": "Spreads", "scale": 0.01, "start_override": null}, {"id": "g8", "title": "Spread médio das operações com recursos livres (PF)", "series": [{"code": 20809, "name": "PF"}], "transform": "level", "unit": "pct", "block": "Spreads", "scale": 0.01, "start_override": null}, {"id": "g9", "title": "Spread médio das operações com recursos livres (PJ)", "series": [{"code": 20787, "name": "PJ"}], "transform": "level", "unit": "pct", "block": "Spreads", "scale": 0.01, "start_override": null}, {"id": "g17", "title": "Saldo com crédito pessoal não consignado — YoY 12m", "series": [{"code": 20574, "name": "20574"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "scale": 1.0, "start_override": null}, {"id": "g18", "title": "Saldo com crédito pessoal consignado total — YoY 12m", "series": [{"code": 20579, "name": "20579"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "scale": 1.0, "start_override": null}, {"id": "g19", "title": "Saldo com aquisição de veículos — YoY 12m", "series": [{"code": 20581, "name": "20581"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "scale": 1.0, "start_override": null}, {"id": "g20", "title": "Saldo com cartão de crédito — YoY 12m", "series": [{"code": 20590, "name": "20590"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "scale": 1.0, "start_override": null}, {"id": "g21", "title": "Inadimplência PF — Crédito pessoal não consignado", "series": [{"code": 21114, "name": "21114"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "scale": 0.01, "start_override": null}, {"id": "g22", "title": "Inadimplência PF — Crédito pessoal consignado", "series": [{"code": 21119, "name": "21119"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "scale": 0.01, "start_override": null}, {"id": "g23", "title": "Inadimplência PF — Veículos", "series": [{"code": 21121, "name": "21121"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "scale": 0.01, "start_override": null}, {"id": "g24", "title": "Inadimplência PF — Cartão de crédito", "series": [{"code": 21129, "name": "21129"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "scale": 0.01, "start_override": null}, {"id": "g25", "title": "Saldo ao setor agropecuário", "series": [{"code": 22027, "name": "22027"}], "transform": "level", "unit": "raw", "block": "Agro", "scale": 1.0, "start_override": null}, {"id": "g26", "title": "Saldo ao setor agropecuário — YoY 12m", "series": [{"code": 22027, "name": "22027"}], "transform": "yoy", "unit": "pct", "block": "Agro", "scale": 1.0, "start_override": null}, {"id": "g27", "title": "Saldo — Pessoas jurídicas — Crédito rural total (Recursos direcionados) — YoY 12m", "series": [{"code": 20597, "name": "20597"}], "transform": "yoy", "unit": "pct", "block": "Agro", "scale": 1.0, "start_override": null}, {"id": "g28", "title": "Saldo — Pessoas físicas — Crédito rural total (Recursos direcionados) — YoY 12m", "series": [{"code": 20609, "name": "20609"}], "transform": "yoy", "unit": "pct", "block": "Agro", "scale": 1.0, "start_override": null}, {"id": "g29", "title": "Inadimplência PJ — Crédito rural total", "series": [{"code": 21136, "name": "PJ"}], "transform": "level", "unit": "pct", "block": "Agro", "scale": 0.01, "start_override": null}, {"id": "g30", "title": "Inadimplência PF — Crédito rural total", "series": [{"code": 21148, "name": "PF"}], "transform": "level", "unit": "pct", "block": "Agro", "scale": 0.01, "start_override": null}];
+  const CHARTS = [{"id": "g1", "title": "Saldo total de crédito", "series": [{"code": 20539, "name": "20539"}], "transform": "level", "unit": "raw", "block": "Saldos do Sistema", "start_override": null, "scale": 1.0}, {"id": "g2", "title": "Saldo total de crédito — YoY 12m", "series": [{"code": 20539, "name": "20539"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "start_override": "2000-01-01", "scale": 1.0}, {"id": "g3", "title": "Saldo com recursos livres", "series": [{"code": 20542, "name": "20542"}], "transform": "level", "unit": "raw", "block": "Saldos do Sistema", "start_override": null, "scale": 1.0}, {"id": "g4", "title": "Saldo com recursos livres — YoY 12m", "series": [{"code": 20542, "name": "20542"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "start_override": null, "scale": 1.0}, {"id": "g5", "title": "Saldo com recursos livres (PF x PJ) — YoY 12m", "series": [{"code": 20543, "name": "PF"}, {"code": 20570, "name": "PJ"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "start_override": null, "scale": 1.0}, {"id": "g6", "title": "Saldo por porte de empresa — YoY 12m", "series": [{"code": 27702, "name": "Grande"}, {"code": 27701, "name": "Micro, Pequena e Média (MPMe)"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "start_override": null, "scale": 1.0}, {"id": "g10", "title": "Inadimplência recursos livres", "series": [{"code": 21085, "name": "Total"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0}, {"id": "g11", "title": "Inadimplência recursos livres (PF)", "series": [{"code": 21112, "name": "PF"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0}, {"id": "g12", "title": "Inadimplência recursos livres (PJ)", "series": [{"code": 21086, "name": "PJ"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0}, {"id": "g13", "title": "Inadimplência por porte da empresa (Grande x MPMe)", "series": [{"code": 27704, "name": "Grande"}, {"code": 27703, "name": "Micro, Pequena e Média (MPMe)"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0}, {"id": "g15", "title": "Endividamento das famílias", "series": [{"code": 29037, "name": "29037"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0}, {"id": "g16", "title": "Comprometimento de renda das famílias - Serviço da dívida", "series": [{"code": 29034, "name": "29034"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0}, {"id": "g7", "title": "Spread médio das operações com recursos livres", "series": [{"code": 20786, "name": "Total"}], "transform": "level", "unit": "pct", "block": "Spreads", "start_override": null, "scale": 1.0}, {"id": "g8", "title": "Spread médio das operações com recursos livres (PF)", "series": [{"code": 20809, "name": "PF"}], "transform": "level", "unit": "pct", "block": "Spreads", "start_override": null, "scale": 1.0}, {"id": "g9", "title": "Spread médio das operações com recursos livres (PJ)", "series": [{"code": 20787, "name": "PJ"}], "transform": "level", "unit": "pct", "block": "Spreads", "start_override": null, "scale": 1.0}, {"id": "g17", "title": "Saldo com crédito pessoal não consignado — YoY 12m", "series": [{"code": 20574, "name": "20574"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0}, {"id": "g18", "title": "Saldo com crédito pessoal consignado total — YoY 12m", "series": [{"code": 20579, "name": "20579"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0}, {"id": "g19", "title": "Saldo com aquisição de veículos — YoY 12m", "series": [{"code": 20581, "name": "20581"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0}, {"id": "g20", "title": "Saldo com cartão de crédito — YoY 12m", "series": [{"code": 20590, "name": "20590"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0}, {"id": "g21", "title": "Inadimplência PF — Crédito pessoal não consignado", "series": [{"code": 21114, "name": "21114"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0}, {"id": "g22", "title": "Inadimplência PF — Crédito pessoal consignado", "series": [{"code": 21119, "name": "21119"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0}, {"id": "g23", "title": "Inadimplência PF — Veículos", "series": [{"code": 21121, "name": "21121"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0}, {"id": "g24", "title": "Inadimplência PF — Cartão de crédito", "series": [{"code": 21129, "name": "21129"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0}, {"id": "g25", "title": "Saldo ao setor agropecuário", "series": [{"code": 22027, "name": "22027"}], "transform": "level", "unit": "raw", "block": "Agro", "start_override": null, "scale": 1.0}, {"id": "g26", "title": "Saldo ao setor agropecuário — YoY 12m", "series": [{"code": 22027, "name": "22027"}], "transform": "yoy", "unit": "pct", "block": "Agro", "start_override": null, "scale": 1.0}, {"id": "g27", "title": "Saldo — Pessoas jurídicas — Crédito rural total (Recursos direcionados) — YoY 12m", "series": [{"code": 20597, "name": "20597"}], "transform": "yoy", "unit": "pct", "block": "Agro", "start_override": null, "scale": 1.0}, {"id": "g28", "title": "Saldo — Pessoas físicas — Crédito rural total (Recursos direcionados) — YoY 12m", "series": [{"code": 20609, "name": "20609"}], "transform": "yoy", "unit": "pct", "block": "Agro", "start_override": null, "scale": 1.0}, {"id": "g29", "title": "Inadimplência PJ — Crédito rural total", "series": [{"code": 21136, "name": "PJ"}], "transform": "level", "unit": "pct", "block": "Agro", "start_override": null, "scale": 1.0}, {"id": "g30", "title": "Inadimplência PF — Crédito rural total", "series": [{"code": 21148, "name": "PF"}], "transform": "level", "unit": "pct", "block": "Agro", "start_override": null, "scale": 1.0}];
   const BLOCK_ORDER = ["Saldos do Sistema", "Inadimplência", "Spreads", "Abertura de Pessoa Física", "Agro"];
 
-  // Cache para exportação
   const __chartData = {};
   function sanitizeFileName(s){ return (s||"dados").toString().normalize("NFD").replace(/\p{Diacritic}/gu,"").replace(/[^a-zA-Z0-9\-_ ]+/g,"").trim().replace(/\s+/g,"_"); }
   function downloadBlob(filename, blob){ const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
@@ -112,15 +106,13 @@
     const stamp = new Date().toISOString().slice(0,10);
     const filenameXlsx = `${safeTitle}_${stamp}.xlsx`;
     try{
-      if(typeof XLSX === "undefined") throw new Error("no_xlsx");
       const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
-      ws["!cols"] = header.map(h => ({wch: Math.max(10, Math.min(28, String(h).length + 2))}));
+      ws["!cols"] = header.map(h => ({wch: Math.max(10, Math.min(32, String(h).length + 2))}));
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Dados");
       const out = XLSX.write(wb, {bookType:"xlsx", type:"array"});
       downloadBlob(filenameXlsx, new Blob([out], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
-      return;
-    } catch(e){
+    } catch(e) {
       const csv = [header, ...rows].map(r => r.map(v => (v===null||v===undefined) ? "" : String(v).replace(/\r?\n/g," ")).join(";")).join("\n");
       downloadBlob(`${safeTitle}_${stamp}.csv`, new Blob([csv], {type:"text/csv;charset=utf-8"}));
     }
@@ -184,15 +176,21 @@
   function setText(id,txt){ const el=document.getElementById(id); if(el) el.textContent=txt; }
   function setHTML(id,html){ const el=document.getElementById(id); if(el) el.innerHTML=html; }
 
-  function parseBCBDateToISO(br){
-    const [dd,mm,yy] = br.split("/");
-    return `${yy}-${mm}-${dd}`;
+  function parseBCBDateToISO(br){ const [dd,mm,yy] = br.split("/"); return `${yy}-${mm}-${dd}`; }
+
+  function parseBCBNumber(raw){
+    if(raw===null || raw===undefined || raw==="") return null;
+    let v = String(raw).trim();
+    // Se vier no padrão BR: 1.234,56
+    if(v.includes(",")){ v = v.replace(/\./g,"").replace(",","."); }
+    const num = Number(v);
+    return Number.isFinite(num) ? num : null;
   }
 
   async function loadSeriesAll(code){
     const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.${code}/dados?formato=json`;
     const arr = await apiGet(url);
-    return arr.map(p => ({ date: parseBCBDateToISO(p.data), value: (p.valor===""||p.valor===null) ? null : Number(String(p.valor).replace(",", ".")) }));
+    return arr.map(p => ({ date: parseBCBDateToISO(p.data), value: parseBCBNumber(p.valor) }));
   }
 
   function applyScale(data, scale){ if(!scale||scale===1.0) return data; return data.map(p => ({date:p.date, value: p.value===null?null:p.value*scale})); }
@@ -223,8 +221,7 @@
     for(const s of chart.series){
       const raw = await loadSeriesAll(s.code);
       const scaled = applyScale(raw, chart.scale || 1.0);
-      const startCut = chart.start_override;
-      const data = startCut ? scaled.filter(p => p.date >= startCut) : scaled;
+      const data = chart.start_override ? scaled.filter(p => p.date >= chart.start_override) : scaled;
       seriesPayloads.push({name:s.name, data});
     }
 
@@ -238,10 +235,15 @@
       dates: aligned[0].x.slice(),
       series: aligned.map(s => ({name:s.name, values:s.y.slice()}))
     };
+
     const btn = document.getElementById(`btn_xlsx_${chart.id}`);
     if(btn && !btn.__bound){ btn.addEventListener('click', () => exportChartToExcel(chart.id)); btn.__bound = true; }
 
-    const traces = aligned.map(s => ({ x:s.x, y:s.y, type:'scatter', mode:'lines', name:s.name, hovertemplate:'%{x|%d/%m/%Y}<br><b>%{y:.2f}</b><extra></extra>' }));
+    const traces = aligned.map(s => ({
+      x:s.x, y:s.y, type:'scatter', mode:'lines', name:s.name,
+      hovertemplate:'%{x|%d/%m/%Y}<br><b>%{y:.2f}</b><extra></extra>'
+    }));
+
     const yTitle = (chart.unit==="pct" ? "%" : "Valor");
     const layout = {
       margin:{l:50,r:20,t:10,b:45},
@@ -273,7 +275,7 @@
       setText(`kpi_last_foot_${chart.id}`, last.date ? `Última obs: ${fmtDateBR(last.date)}` : "—");
     }
 
-    if(chart.transform!=="yoy"){
+    if(chart.transform!=="yoy"){ // Só mostra caixa de "Variação 12m" quando NÃO for gráfico YoY
       const main = aligned[0];
       const last = computeLast(main.y, main.x);
       if(chart.unit==="pct"){
@@ -302,14 +304,8 @@
   async function renderAll(){
     setStatus("Carregando…");
     buildBlocks();
-    try{
-      for(const chart of CHARTS) await renderChart(chart);
-      setStatus("Atualizado.");
-    } catch(e){
-      console.error(e);
-      setStatus("⚠️ Erro ao carregar (ver console).");
-      document.getElementById("corswarn").style.display = "block";
-    }
+    for(const chart of CHARTS) await renderChart(chart);
+    setStatus("Atualizado.");
   }
 
   refreshBtn.addEventListener('click', renderAll);
