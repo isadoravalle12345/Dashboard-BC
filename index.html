@@ -3,64 +3,114 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Dashboard Crédito — SGS/BCB (JGP)</title>
+  <title>Dashboard Bacen (SGS) — Crédito</title>
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <style>
-    :root{ --muted:#92a0b3; --text:#e8eef7; }
-    body{ margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; background: linear-gradient(180deg,#070b10 0%,#0b0f16 35%,#0b0f16 100%); color:var(--text); }
+    :root{
+      --bg:#0b0f16;
+      --card:#121a26;
+      --muted:#92a0b3;
+      --text:#e8eef7;
+      --grid:#1c2a3d;
+      --accent:#4cc2ff;
+      --danger:#ff5c7a;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans";
+      background: linear-gradient(180deg, #070b10 0%, #0b0f16 35%, #0b0f16 100%);
+      color:var(--text);
+    }
     .wrap{max-width:1300px; margin:0 auto; padding:20px 16px 36px;}
     .title{display:flex; justify-content:space-between; align-items:end; gap:12px; flex-wrap:wrap; margin-bottom:12px;}
     h1{font-size:20px; margin:0;}
-    .sub,.status{color:var(--muted); font-size:13px;}
-    .status{font-size:12px;}
-    .card{ background: rgba(18,26,38,0.88); border:1px solid rgba(146,160,179,0.12); box-shadow: 0 12px 40px rgba(0,0,0,0.25); border-radius:14px; padding:14px; backdrop-filter: blur(6px); }
+    .sub{color:var(--muted); font-size:13px;}
+    .status{color:var(--muted); font-size:12px;}
+    .card{
+      background: rgba(18,26,38,0.88);
+      border: 1px solid rgba(146,160,179,0.12);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+      border-radius: 14px;
+      padding: 14px 14px;
+      backdrop-filter: blur(6px);
+    }
     .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
-    .pill{font-size:12px; color:var(--muted); border:1px solid rgba(146,160,179,0.18); padding:6px 10px; border-radius:999px; background: rgba(14,21,33,0.8);}
+    .pill{
+      font-size:12px; color:var(--muted);
+      border: 1px solid rgba(146,160,179,0.18);
+      padding: 6px 10px; border-radius: 999px;
+      background: rgba(14,21,33,0.8);
+    }
     .grid{display:grid; gap:12px;}
     .grid3{grid-template-columns: repeat(3, minmax(0, 1fr));}
+    .hint{color:var(--muted); font-size:12px; line-height:1.45;}
     .kpis{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
-    .kpi{flex:1 1 160px; border:1px solid rgba(146,160,179,0.12); border-radius:12px; padding:10px; background: rgba(14,21,33,0.65);}
+    .kpi{
+      flex: 1 1 140px;
+      border: 1px solid rgba(146,160,179,0.12);
+      border-radius: 12px;
+      padding: 10px 10px;
+      background: rgba(14,21,33,0.65);
+    }
     .kpi .label{font-size:11px; color:var(--muted); margin-bottom:6px;}
-    .kpi .value{font-size:16px; font-weight:650; line-height:1.25;}
+    .kpi .value{font-size:16px; font-weight:650;}
     .kpi .foot{font-size:11px; color:var(--muted); margin-top:4px;}
-    .subline{font-size:12px; font-weight:650; margin:2px 0;}
-    .subline span{font-weight:500; color:var(--muted);}
     .plot{height:300px;}
-    button{border-radius:10px; padding:10px 12px; border:1px solid rgba(146,160,179,0.18); background: linear-gradient(180deg, rgba(76,194,255,0.22), rgba(76,194,255,0.08)); color: var(--text); font-weight:650; cursor:pointer;}
+    button{
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(146,160,179,0.18);
+      background: linear-gradient(180deg, rgba(76,194,255,0.22), rgba(76,194,255,0.08));
+      color: var(--text);
+      font-weight: 650;
+      cursor:pointer;
+    }
     button:hover{border-color: rgba(76,194,255,0.55);}
-    .dlbtn{padding:6px 10px; font-size:12px; border-radius:10px;}
+    @media (max-width: 1100px){
+      .grid3{grid-template-columns: repeat(2, minmax(0, 1fr));}
+      .plot{height:280px;}
+    }
+    @media (max-width: 760px){
+      .grid3{grid-template-columns: 1fr;}
+      .plot{height:260px;}
+    }
+    code{color:#cfe8ff;}
     h2{margin:0; font-size:16px;}
     .blockHead{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap;}
     .divider{height:1px; background: rgba(146,160,179,0.12); margin:10px 0 12px;}
-    @media (max-width:1100px){ .grid3{grid-template-columns: repeat(2, minmax(0, 1fr));} .plot{height:280px;} }
-    @media (max-width:760px){ .grid3{grid-template-columns: 1fr;} .plot{height:260px;} }
-    code{color:#cfe8ff;}
   </style>
 </head>
 <body>
 <div class="wrap">
   <div class="title">
     <div>
-      <h1>Dashboard — Estatísticas de Crédito (SGS/BCB) <span style="font-size:12px;color:#92a0b3; font-weight:600;">(web v4.1)</span></h1>
-      <div class="sub">3 gráficos por linha • atualização ao abrir • JGP</div>
+      <h1>Dashboard — Estatísticas de Crédito (SGS/BCB)</h1>
+      <div class="sub">Atualiza ao abrir • 3 gráficos por linha • intervalo automático por série • 5 blocos</div>
     </div>
     <div class="status" id="status">Pronto.</div>
+  </div>
+
+  <div class="card" id="filewarn" style="display:none; margin-bottom:12px; border-color: rgba(255,92,122,0.35);">
+    <div style="font-weight:650; margin-bottom:6px;">⚠️ Abra pelo servidor local</div>
+    <div class="hint">Se você abriu este arquivo diretamente (file://), os dados não carregam. Rode <code>python serve.py</code> e abra <code>http://127.0.0.1:8000</code>.</div>
   </div>
 
   <div class="card" style="margin-bottom:12px;">
     <div class="row">
       <span class="pill">Fonte: SGS (Banco Central)</span>
-      <span class="pill">JGP</span>
-      <span class="pill">YoY 12m = variação vs 12 obs atrás</span>
+      <span class="pill">YoY 12m = variação % vs 12 observações atrás</span>
       <button id="refresh" style="margin-left:auto;">Atualizar agora</button>
+    </div>
+    <div class="hint" style="margin-top:10px;">
+      Em gráficos YoY 12m, não mostramos o card "Variação 12m" (fica redundante).
     </div>
   </div>
 
   <div id="blocks"></div>
 
-  <div class="status" style="margin-top:12px;">
-    Fonte de dados (API): <code>https://api.bcb.gov.br/dados/serie/bcdata.sgs.CODIGO/dados?formato=json</code>
+  <div class="hint" style="margin-top:12px;">
+    Endpoint local: <code>/api/sgs_range?series=CODIGO</code> e <code>/api/sgs?series=CODIGO&start=YYYY-MM-DD&end=YYYY-MM-DD</code>
   </div>
 </div>
 
@@ -70,53 +120,38 @@
   const refreshBtn = document.getElementById('refresh');
 
   function setStatus(msg){ statusEl.textContent = msg; }
-  function fmtBR(x, dec=2, suffix=""){ if(x===null||x===undefined||Number.isNaN(x)) return "—"; return x.toLocaleString('pt-BR', {minimumFractionDigits:dec, maximumFractionDigits:dec})+suffix; }
-  function fmtDateBR(iso){ const d=new Date(iso); return d.toLocaleDateString('pt-BR'); }
-  function maxIso(a,b){ if(!a) return b; if(!b) return a; return a>b?a:b; }
 
-  function yoyPct(values){
-    const out = values.map(_=>null);
-    for(let i=12;i<values.length;i++){ const a=values[i-12], b=values[i]; if(a===0||a===null||b===null){ out[i]=null; continue; } out[i]=(b/a-1.0)*100.0; }
-    return out;
+  function fmtBR(x, dec=2, suffix=""){
+    if (x === null || x === undefined || Number.isNaN(x)) return "—";
+    return x.toLocaleString('pt-BR', {minimumFractionDigits: dec, maximumFractionDigits: dec}) + suffix;
   }
-  function yoyBps(values){
+
+  function fmtDateBR(iso){
+    const d = new Date(iso);
+    return d.toLocaleDateString('pt-BR');
+  }
+
+  function yoy(values){
     const out = values.map(_=>null);
-    for(let i=12;i<values.length;i++){ const a=values[i-12], b=values[i]; if(a===null||b===null){ out[i]=null; continue; } out[i]=(b-a)*100.0; }
+    for(let i=12;i<values.length;i++){
+      const a = values[i-12];
+      const b = values[i];
+      if(a === 0 || a === null || b === null) { out[i]=null; continue; }
+      out[i] = (b/a - 1.0) * 100.0;
+    }
     return out;
   }
 
   async function apiGet(url){
-    const res = await fetch(url);
+    let res;
+    try{ res = await fetch(url); }
+    catch(e){ throw new Error("fetch_failed"); }
     if(!res.ok) throw new Error("bad_response");
     return await res.json();
   }
 
-  const CHARTS = [{"id": "g1", "title": "Saldo total de crédito", "series": [{"code": 20539, "name": "20539"}], "transform": "level", "unit": "raw", "block": "Saldos do Sistema", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g2", "title": "Saldo total de crédito — YoY 12m", "series": [{"code": 20539, "name": "20539"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "start_override": "2000-01-01", "scale": 1.0, "pct_auto": false}, {"id": "g3", "title": "Saldo com recursos livres", "series": [{"code": 20542, "name": "20542"}], "transform": "level", "unit": "raw", "block": "Saldos do Sistema", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g4", "title": "Saldo com recursos livres — YoY 12m", "series": [{"code": 20542, "name": "20542"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g5", "title": "Saldo com recursos livres (PF x PJ) — YoY 12m", "series": [{"code": 20570, "name": "PJ"}, {"code": 20543, "name": "PF"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g6", "title": "Saldo por porte de empresa — YoY 12m", "series": [{"code": 27702, "name": "Grande"}, {"code": 27701, "name": "MPMe"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g10", "title": "Inadimplência recursos livres", "series": [{"code": 21085, "name": "Total"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g11", "title": "Inadimplência recursos livres (PF)", "series": [{"code": 21112, "name": "PF"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g12", "title": "Inadimplência recursos livres (PJ)", "series": [{"code": 21086, "name": "PJ"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g13", "title": "Inadimplência por porte da empresa (Grande x MPMe)", "series": [{"code": 27704, "name": "Grande"}, {"code": 27703, "name": "Micro, Pequena e Média (MPMe)"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g15", "title": "Endividamento das famílias", "series": [{"code": 29037, "name": "29037"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g16", "title": "Comprometimento de renda das famílias - Serviço da dívida", "series": [{"code": 29034, "name": "29034"}], "transform": "level", "unit": "pct", "block": "Inadimplência", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g7", "title": "Spread médio das operações com recursos livres", "series": [{"code": 20786, "name": "Total"}], "transform": "level", "unit": "pct", "block": "Spreads", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g8", "title": "Spread médio das operações com recursos livres (PF)", "series": [{"code": 20809, "name": "PF"}], "transform": "level", "unit": "pct", "block": "Spreads", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g9", "title": "Spread médio das operações com recursos livres (PJ)", "series": [{"code": 20787, "name": "PJ"}], "transform": "level", "unit": "pct", "block": "Spreads", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g17", "title": "Saldo com crédito pessoal não consignado — YoY 12m", "series": [{"code": 20574, "name": "20574"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g18", "title": "Saldo com crédito pessoal consignado total — YoY 12m", "series": [{"code": 20579, "name": "20579"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g19", "title": "Saldo com aquisição de veículos — YoY 12m", "series": [{"code": 20581, "name": "20581"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g20", "title": "Saldo com cartão de crédito — YoY 12m", "series": [{"code": 20590, "name": "20590"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g21", "title": "Inadimplência PF — Crédito pessoal não consignado", "series": [{"code": 21114, "name": "21114"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g22", "title": "Inadimplência PF — Crédito pessoal consignado", "series": [{"code": 21119, "name": "21119"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g23", "title": "Inadimplência PF — Veículos", "series": [{"code": 21121, "name": "21121"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g24", "title": "Inadimplência PF — Cartão de crédito", "series": [{"code": 21129, "name": "21129"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g25", "title": "Saldo ao setor agropecuário", "series": [{"code": 22027, "name": "22027"}], "transform": "level", "unit": "raw", "block": "Agro", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g26", "title": "Saldo ao setor agropecuário — YoY 12m", "series": [{"code": 22027, "name": "22027"}], "transform": "yoy", "unit": "pct", "block": "Agro", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g27", "title": "Saldo — Pessoas jurídicas — Crédito rural total (Recursos direcionados) — YoY 12m", "series": [{"code": 20597, "name": "20597"}], "transform": "yoy", "unit": "pct", "block": "Agro", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g28", "title": "Saldo — Pessoas físicas — Crédito rural total (Recursos direcionados) — YoY 12m", "series": [{"code": 20609, "name": "20609"}], "transform": "yoy", "unit": "pct", "block": "Agro", "start_override": null, "scale": 1.0, "pct_auto": false}, {"id": "g29", "title": "Inadimplência PJ — Crédito rural total", "series": [{"code": 21136, "name": "PJ"}], "transform": "level", "unit": "pct", "block": "Agro", "start_override": null, "scale": 1.0, "pct_auto": true}, {"id": "g30", "title": "Inadimplência PF — Crédito rural total", "series": [{"code": 21148, "name": "PF"}], "transform": "level", "unit": "pct", "block": "Agro", "start_override": null, "scale": 1.0, "pct_auto": true}];
+  const CHARTS = [{"id": "g1", "title": "Saldo total de crédito", "series": [{"code": 20539, "name": "20539"}], "transform": "level", "unit": "raw", "block": "Saldos do Sistema"}, {"id": "g2", "title": "Saldo total de crédito — YoY 12m", "series": [{"code": 20539, "name": "20539"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema"}, {"id": "g3", "title": "Saldo com recursos livres", "series": [{"code": 20542, "name": "20542"}], "transform": "level", "unit": "raw", "block": "Saldos do Sistema"}, {"id": "g4", "title": "Saldo com recursos livres — YoY 12m", "series": [{"code": 20542, "name": "20542"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema"}, {"id": "g5", "title": "Saldo com recursos com recursos livres (PF x PJ) — YoY 12m", "series": [{"code": 20543, "name": "PF (20543)"}, {"code": 20570, "name": "PJ (20570)"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema"}, {"id": "g6", "title": "Saldo por porte de empresa — YoY 12m", "series": [{"code": 27702, "name": "Série 27702"}, {"code": 27701, "name": "Série 27701"}], "transform": "yoy", "unit": "pct", "block": "Saldos do Sistema"}, {"id": "g10", "title": "Inadimplência recursos livres", "series": [{"code": 21085, "name": "21085"}], "transform": "level", "unit": "pct", "block": "Inadimplência"}, {"id": "g11", "title": "Inadimplência recursos livres (PF)", "series": [{"code": 21112, "name": "21112"}], "transform": "level", "unit": "pct", "block": "Inadimplência"}, {"id": "g12", "title": "Inadimplência recursos livres (PJ)", "series": [{"code": 21086, "name": "21086"}], "transform": "level", "unit": "pct", "block": "Inadimplência"}, {"id": "g13", "title": "Inadimplência por porte da empresa - Grande", "series": [{"code": 27704, "name": "27704"}], "transform": "level", "unit": "pct", "block": "Inadimplência"}, {"id": "g14", "title": "Inadimplência por porte da empresa - Micro, Pequena e Média (MPMe)", "series": [{"code": 27703, "name": "27703"}], "transform": "level", "unit": "pct", "block": "Inadimplência"}, {"id": "g15", "title": "Endividamento das famílias", "series": [{"code": 29037, "name": "29037"}], "transform": "level", "unit": "pct", "block": "Inadimplência"}, {"id": "g16", "title": "Comprometimento de renda das famílias - Serviço da dívida", "series": [{"code": 29034, "name": "29034"}], "transform": "level", "unit": "pct", "block": "Inadimplência"}, {"id": "g7", "title": "Spread médio das operações com recursos livres", "series": [{"code": 20786, "name": "20786"}], "transform": "level", "unit": "pct", "block": "Spreads"}, {"id": "g8", "title": "Spread médio das operações com recursos livres (PF)", "series": [{"code": 20809, "name": "20809"}], "transform": "level", "unit": "pct", "block": "Spreads"}, {"id": "g9", "title": "Spread médio das operações com recursos livres (PJ)", "series": [{"code": 20787, "name": "20787"}], "transform": "level", "unit": "pct", "block": "Spreads"}, {"id": "g17", "title": "Saldo com crédito pessoal não consignado — YoY 12m", "series": [{"code": 20574, "name": "20574"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física"}, {"id": "g18", "title": "Saldo com crédito pessoal consignado total — YoY 12m", "series": [{"code": 20579, "name": "20579"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física"}, {"id": "g19", "title": "Saldo com aquisição de veículos — YoY 12m", "series": [{"code": 20581, "name": "20581"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física"}, {"id": "g20", "title": "Saldo com cartão de crédito — YoY 12m", "series": [{"code": 20590, "name": "20590"}], "transform": "yoy", "unit": "pct", "block": "Abertura de Pessoa Física"}, {"id": "g21", "title": "Inadimplência PF — Crédito pessoal não consignado", "series": [{"code": 21114, "name": "21114"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física"}, {"id": "g22", "title": "Inadimplência PF — Crédito pessoal consignado", "series": [{"code": 21119, "name": "21119"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física"}, {"id": "g23", "title": "Inadimplência PF — Veículos", "series": [{"code": 21121, "name": "21121"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física"}, {"id": "g24", "title": "Inadimplência PF — Cartão de crédito", "series": [{"code": 21129, "name": "21129"}], "transform": "level", "unit": "pct", "block": "Abertura de Pessoa Física"}, {"id": "g25", "title": "Saldo ao setor agropecuário", "series": [{"code": 22027, "name": "22027"}], "transform": "level", "unit": "raw", "block": "Agro"}, {"id": "g26", "title": "Saldo ao setor agropecuário — YoY 12m", "series": [{"code": 22027, "name": "22027"}], "transform": "yoy", "unit": "pct", "block": "Agro"}, {"id": "g27", "title": "Saldo — Pessoas jurídicas — Crédito rural total (Recursos direcionados) — YoY 12m", "series": [{"code": 20597, "name": "20597"}], "transform": "yoy", "unit": "pct", "block": "Agro"}, {"id": "g28", "title": "Saldo — Pessoas físicas — Crédito rural total (Recursos direcionados) — YoY 12m", "series": [{"code": 20609, "name": "20609"}], "transform": "yoy", "unit": "pct", "block": "Agro"}, {"id": "g29", "title": "Inadimplência PJ — Crédito rural total", "series": [{"code": 21136, "name": "21136"}], "transform": "level", "unit": "pct", "block": "Agro"}, {"id": "g30", "title": "Inadimplência PF — Crédito rural total", "series": [{"code": 21148, "name": "21148"}], "transform": "level", "unit": "pct", "block": "Agro"}];
   const BLOCK_ORDER = ["Saldos do Sistema", "Inadimplência", "Spreads", "Abertura de Pessoa Física", "Agro"];
-
-  const __chartData = {};
-  function sanitizeFileName(s){ return (s||"dados").toString().normalize("NFD").replace(/\p{Diacritic}/gu,"").replace(/[^a-zA-Z0-9\-_ ]+/g,"").trim().replace(/\s+/g,"_"); }
-  function downloadBlob(filename, blob){ const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
-  function exportChartToExcel(chartId){
-    const payload = __chartData[chartId];
-    if(!payload){ alert("Ainda estou carregando esse gráfico. Tenta de novo em alguns segundos."); return; }
-    const header = ["Data", ...payload.series.map(s=>s.name)];
-    const rows = payload.dates.map((d,i)=>[d, ...payload.series.map(s=>s.values[i])]);
-    const safeTitle = sanitizeFileName(payload.title);
-    const stamp = new Date().toISOString().slice(0,10);
-    const filenameXlsx = `${safeTitle}_${stamp}.xlsx`;
-    try{
-      const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
-      ws["!cols"] = header.map(h => ({wch: Math.max(10, Math.min(32, String(h).length + 2))}));
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Dados");
-      const out = XLSX.write(wb, {bookType:"xlsx", type:"array"});
-      downloadBlob(filenameXlsx, new Blob([out], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
-    } catch(e) {
-      const csv = [header, ...rows].map(r => r.map(v => (v===null||v===undefined) ? "" : String(v).replace(/\r?\n/g," ")).join(";")).join("\n");
-      downloadBlob(`${safeTitle}_${stamp}.csv`, new Blob([csv], {type:"text/csv;charset=utf-8"}));
-    }
-  }
 
   function cardTemplate(chart){
     const isYoY = chart.transform === "yoy";
@@ -124,31 +159,33 @@
       <div class="kpi">
         <div class="label">Variação 12m</div>
         <div class="value" id="kpi_yoy_${chart.id}">—</div>
-        <div class="foot" id="kpi_yoy_foot_${chart.id}">—</div>
+        <div class="foot">(% vs 12 obs atrás)</div>
       </div>
     `;
+
     return `
       <div class="card" id="card_${chart.id}">
         <div style="display:flex; justify-content:space-between; gap:10px; align-items:baseline; flex-wrap:wrap;">
           <div style="font-weight:650;">${chart.title}</div>
-          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            <button class="dlbtn" id="btn_xlsx_${chart.id}">Baixar Excel</button>
-            <div class="status" id="status_${chart.id}">—</div>
-          </div>
+          <div class="status" id="status_${chart.id}">—</div>
         </div>
+
         <div class="kpis">
           <div class="kpi">
             <div class="label">Último valor</div>
             <div class="value" id="kpi_last_${chart.id}">—</div>
             <div class="foot" id="kpi_last_foot_${chart.id}">—</div>
           </div>
+
           ${yoyKpi}
+
           <div class="kpi">
             <div class="label">Pontos no período</div>
             <div class="value" id="kpi_n_${chart.id}">—</div>
             <div class="foot" id="kpi_range_${chart.id}">—</div>
           </div>
         </div>
+
         <div class="plot" id="plot_${chart.id}"></div>
       </div>
     `;
@@ -157,187 +194,156 @@
   function buildBlocks(){
     const byBlock = new Map();
     for(const b of BLOCK_ORDER) byBlock.set(b, []);
-    for(const c of CHARTS){ if(!byBlock.has(c.block)) byBlock.set(c.block, []); byBlock.get(c.block).push(c); }
+    for(const c of CHARTS){
+      if(!byBlock.has(c.block)) byBlock.set(c.block, []);
+      byBlock.get(c.block).push(c);
+    }
+
     blocksEl.innerHTML = BLOCK_ORDER.map((b, idx) => {
       const charts = byBlock.get(b) || [];
       const blockId = `block_${idx+1}`;
       const gridId = `grid_${blockId}`;
       return `
         <div class="card" id="${blockId}" style="margin-bottom:12px;">
-          <div class="blockHead"><h2>${b}</h2><div class="status">${charts.length} gráficos</div></div>
+          <div class="blockHead">
+            <h2>${b}</h2>
+            <div class="status">${charts.length} gráficos</div>
+          </div>
           <div class="divider"></div>
-          <div class="grid grid3" id="${gridId}">${charts.map(cardTemplate).join("")}</div>
+          <div class="grid grid3" id="${gridId}">
+            ${charts.map(cardTemplate).join("")}
+          </div>
         </div>
       `;
     }).join("");
   }
 
-  function setCardStatus(id,msg){ const el=document.getElementById(`status_${id}`); if(el) el.textContent=msg; }
-  function setText(id,txt){ const el=document.getElementById(id); if(el) el.textContent=txt; }
-  function setHTML(id,html){ const el=document.getElementById(id); if(el) el.innerHTML=html; }
-
-  function parseBCBDateToISO(br){ const [dd,mm,yy] = br.split("/"); return `${yy}-${mm}-${dd}`; }
-
-  function parseBCBNumber(raw){
-    if(raw===null || raw===undefined || raw==="") return null;
-    let v = String(raw).trim();
-    // Se vier no padrão BR: 1.234,56
-    if(v.includes(",")){ v = v.replace(/\./g,"").replace(",","."); }
-    const num = Number(v);
-    return Number.isFinite(num) ? num : null;
+  function setCardStatus(id, msg){
+    const el = document.getElementById(`status_${id}`);
+    if(el) el.textContent = msg;
   }
 
-  function autoPctFixes(chart, seriesPayloads){
-    // Ajustes automáticos para gráficos em %:
-    // Algumas séries vêm em "bps" (ex.: 522 = 5,22%). Heurística: se a mediana dos valores for > 100,
-    // interpretamos como bps e dividimos por 100.
-    // NÃO aplicamos regra "valor<1 => multiplicar por 100" porque há séries válidas abaixo de 1%.
-    if(!(chart && chart.unit==="pct")) return seriesPayloads;
-
-    return seriesPayloads.map(sp => {
-      const vals = sp.data.map(p => p.value).filter(v => Number.isFinite(v));
-      if(vals.length === 0) return sp;
-
-      const abs = vals.map(v => Math.abs(v)).sort((a,b)=>a-b);
-      const mid = Math.floor(abs.length/2);
-      const median = (abs.length % 2) ? abs[mid] : (abs[mid-1] + abs[mid]) / 2;
-
-      if(median > 100){
-        return { name: sp.name, data: sp.data.map(p => ({ date: p.date, value: (p.value==null?null:p.value/100) })) };
-      }
-      return sp;
-    });
+  function setText(id, txt){
+    const el = document.getElementById(id);
+    if(el) el.textContent = txt;
   }
 
-      return sp;
-    });
+  async function loadSeriesRange(seriesCode){
+    return await apiGet(`/api/sgs_range?series=${encodeURIComponent(seriesCode)}`);
   }
 
-
-  async function loadSeriesAll(code){
-    const url = `https://api.bcb.gov.br/dados/serie/bcdata.sgs.${code}/dados?formato=json`;
-    const arr = await apiGet(url);
-    return arr.map(p => ({ date: parseBCBDateToISO(p.data), value: parseBCBNumber(p.valor) }));
+  async function loadSeriesData(seriesCode, startIso, endIso){
+    return await apiGet(`/api/sgs?series=${encodeURIComponent(seriesCode)}&start=${encodeURIComponent(startIso)}&end=${encodeURIComponent(endIso)}`);
   }
-
-  function applyScale(data, scale){ if(!scale||scale===1.0) return data; return data.map(p => ({date:p.date, value: p.value===null?null:p.value*scale})); }
 
   function alignByDate(seriesList){
     const dateSet = new Set();
     seriesList.forEach(s => s.data.forEach(p => dateSet.add(p.date)));
     const dates = Array.from(dateSet).sort();
-    const mapList = seriesList.map(s => ({ name:s.name, map:new Map(s.data.map(p=>[p.date,p.value])) }));
-    return mapList.map(s => ({ name:s.name, x:dates, y:dates.map(d => s.map.has(d) ? s.map.get(d) : null) }));
+    const mapList = seriesList.map(s => ({ name: s.name, map: new Map(s.data.map(p => [p.date, p.value])) }));
+    return mapList.map(s => ({ name: s.name, x: dates, y: dates.map(d => s.map.has(d) ? s.map.get(d) : null) }));
   }
 
   function computeLast(values, dates){
-    let lastIdx=-1;
-    for(let i=values.length-1;i>=0;i--){ if(values[i]!==null && values[i]!==undefined){ lastIdx=i; break; } }
-    return { idx:lastIdx, val:lastIdx>=0?values[lastIdx]:null, date:lastIdx>=0?dates[lastIdx]:null };
+    let lastIdx = -1;
+    for(let i=values.length-1;i>=0;i--){
+      if(values[i] !== null && values[i] !== undefined){ lastIdx=i; break; }
+    }
+    return { idx:lastIdx, val:lastIdx>=0 ? values[lastIdx] : null, date:lastIdx>=0 ? dates[lastIdx] : null };
   }
 
   function applyTransform(aligned, transform){
-    if(transform==="level") return aligned;
-    if(transform==="yoy") return aligned.map(s => ({...s, y: yoyPct(s.y)}));
+    if(transform === "level") return aligned;
+    if(transform === "yoy") return aligned.map(s => ({...s, y: yoy(s.y)}));
     return aligned;
   }
 
   async function renderChart(chart){
     setCardStatus(chart.id, "Carregando…");
+
     const seriesPayloads = [];
     for(const s of chart.series){
-      const raw = await loadSeriesAll(s.code);
-      const scaled = applyScale(raw, chart.scale || 1.0);
-      const data = chart.start_override ? scaled.filter(p => p.date >= chart.start_override) : scaled;
-      seriesPayloads.push({name:s.name, data});
+      const r = await loadSeriesRange(s.code);
+      if(!r || !r.start || !r.end) throw new Error("no_range");
+      const data = await loadSeriesData(s.code, r.start, r.end);
+      seriesPayloads.push({name: s.name, data});
     }
 
-    const seriesPayloads2 = autoPctFixes(chart, seriesPayloads);
-
-    let aligned = alignByDate(seriesPayloads2);
+    let aligned = alignByDate(seriesPayloads);
     aligned = applyTransform(aligned, chart.transform);
 
-    __chartData[chart.id] = {
-      title: chart.title,
-      transform: chart.transform,
-      unit: chart.unit,
-      dates: aligned[0].x.slice(),
-      series: aligned.map(s => ({name:s.name, values:s.y.slice()}))
-    };
-
-    const btn = document.getElementById(`btn_xlsx_${chart.id}`);
-    if(btn && !btn.__bound){ btn.addEventListener('click', () => exportChartToExcel(chart.id)); btn.__bound = true; }
-
     const traces = aligned.map(s => ({
-      x:s.x, y:s.y, type:'scatter', mode:'lines', name:s.name,
-      hovertemplate:'%{x|%d/%m/%Y}<br><b>%{y:.2f}</b><extra></extra>'
+      x: s.x,
+      y: s.y,
+      type: 'scatter',
+      mode: 'lines',
+      name: s.name,
+      hovertemplate: '%{x|%d/%m/%Y}<br><b>%{y:.2f}</b><extra></extra>'
     }));
 
-    const yTitle = (chart.unit==="pct" ? "%" : "Valor");
+    const yTitle = (chart.unit === "pct" ? "%" : "Valor");
     const layout = {
-      margin:{l:50,r:20,t:10,b:45},
-      paper_bgcolor:'rgba(0,0,0,0)',
-      plot_bgcolor:'rgba(0,0,0,0)',
-      xaxis:{title:'Data', gridcolor:'rgba(28,42,61,0.9)', zerolinecolor:'rgba(28,42,61,0.9)'},
-      yaxis:{title:yTitle, gridcolor:'rgba(28,42,61,0.9)', zerolinecolor:'rgba(28,42,61,0.9)'},
-      font:{color:'#e8eef7'},
-      legend:{orientation:'h', x:0, y:1.18}
+      margin: {l: 50, r: 20, t: 10, b: 45},
+      paper_bgcolor: 'rgba(0,0,0,0)',
+      plot_bgcolor: 'rgba(0,0,0,0)',
+      xaxis: {title: 'Data', gridcolor: 'rgba(28,42,61,0.9)', zerolinecolor: 'rgba(28,42,61,0.9)'},
+      yaxis: {title: yTitle, gridcolor: 'rgba(28,42,61,0.9)', zerolinecolor: 'rgba(28,42,61,0.9)'},
+      font: {color: '#e8eef7'},
+      legend: {orientation: 'h', x: 0, y: 1.18}
     };
+
     Plotly.newPlot(`plot_${chart.id}`, traces, layout, {displayModeBar:true, responsive:true});
 
-    const lastSuffix = (chart.unit==="pct" ? "%" : "");
-    const isMulti = aligned.length > 1;
+    const main = aligned[0];
+    const last = computeLast(main.y, main.x);
 
-    if(isMulti){
-      const lines = aligned.map(s => {
-        const last = computeLast(s.y, s.x);
-        const v = (last.val===null ? "—" : fmtBR(last.val, 2, lastSuffix));
-        const d = (last.date ? fmtDateBR(last.date) : "—");
-        return `<div class="subline">${v} <span>(${s.name} · ${d})</span></div>`;
-      });
-      setHTML(`kpi_last_${chart.id}`, lines.join(""));
-      setText(`kpi_last_foot_${chart.id}`, "");
-    } else {
-      const main = aligned[0];
-      const last = computeLast(main.y, main.x);
-      setText(`kpi_last_${chart.id}`, last.val===null ? "—" : fmtBR(last.val, 2, lastSuffix));
-      setText(`kpi_last_foot_${chart.id}`, last.date ? `Última obs: ${fmtDateBR(last.date)}` : "—");
+    const isYoY = chart.transform === "yoy";
+    const lastSuffix = (chart.unit === "pct" ? "%" : "");
+    setText(`kpi_last_${chart.id}`, last.val===null ? "—" : fmtBR(last.val, 2, lastSuffix));
+    setText(`kpi_last_foot_${chart.id}`, last.date ? `Última obs: ${fmtDateBR(last.date)}` : "—");
+
+    if(!isYoY){
+      const yoyArr = yoy(main.y);
+      const lastYoY = last.idx>=0 ? yoyArr[last.idx] : null;
+      setText(`kpi_yoy_${chart.id}`, lastYoY===null ? "—" : fmtBR(lastYoY, 2, "%"));
     }
 
-    if(chart.transform!=="yoy"){ // Só mostra caixa de "Variação 12m" quando NÃO for gráfico YoY
-      const main = aligned[0];
-      const last = computeLast(main.y, main.x);
-      if(chart.unit==="pct"){
-        const bpsArr = yoyBps(main.y);
-        const lastBps = last.idx>=0 ? bpsArr[last.idx] : null;
-        setText(`kpi_yoy_${chart.id}`, lastBps===null ? "—" : fmtBR(lastBps, 0, " bps"));
-        setText(`kpi_yoy_foot_${chart.id}`, "Diferença vs 12 obs atrás");
-      } else {
-        const yoyArr = yoyPct(main.y);
-        const lastYoY = last.idx>=0 ? yoyArr[last.idx] : null;
-        setText(`kpi_yoy_${chart.id}`, lastYoY===null ? "—" : fmtBR(lastYoY, 2, "%"));
-        setText(`kpi_yoy_foot_${chart.id}`, "(% vs 12 obs atrás)");
-      }
-    }
-
-    const unionDates = aligned[0].x;
-    setText(`kpi_n_${chart.id}`, String(unionDates.length));
-    const firstDate = unionDates.find(d => d!==null) || null;
-    let lastDate = null;
-    aligned.forEach(s => { const last = computeLast(s.y, s.x); if(last.date) lastDate = maxIso(lastDate, last.date); });
-    setText(`kpi_range_${chart.id}`, (firstDate && lastDate) ? `${fmtDateBR(firstDate)} → ${fmtDateBR(lastDate)}` : "—");
+    setText(`kpi_n_${chart.id}`, String(main.x.length));
+    const firstDate = main.x.find(d => d !== null) || null;
+    setText(`kpi_range_${chart.id}`, (firstDate && last.date) ? `${fmtDateBR(firstDate)} → ${fmtDateBR(last.date)}` : "—");
 
     setCardStatus(chart.id, "Atualizado");
   }
 
   async function renderAll(){
+    try{
+      if (window.location.protocol === "file:") {
+        const w = document.getElementById("filewarn");
+        if (w) w.style.display = "block";
+        setStatus("⚠️ Abra via http://127.0.0.1:8000");
+        return;
+      }
+    }catch(e){}
+
     setStatus("Carregando…");
     buildBlocks();
-    for(const chart of CHARTS) await renderChart(chart);
-    setStatus("Atualizado.");
+
+    try{
+      for(const chart of CHARTS){
+        await renderChart(chart);
+      }
+      setStatus("Atualizado.");
+    }catch(e){
+      console.error(e);
+      if(String(e.message).includes("fetch_failed")) {
+        setStatus("⚠️ Não consegui acessar /api. O servidor (serve.py) está rodando?");
+      } else {
+        setStatus("⚠️ Erro ao carregar algum gráfico.");
+      }
+    }
   }
 
-  refreshBtn.addEventListener('click', renderAll);
+  refreshBtn.addEventListener('click', () => renderAll());
   renderAll();
 </script>
 </body>
