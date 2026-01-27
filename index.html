@@ -42,7 +42,7 @@
 <div class="wrap">
   <div class="title">
     <div>
-      <h1>Dashboard — Estatísticas de Crédito (SGS/BCB) <span style="font-size:12px;color:#92a0b3; font-weight:600;">(web v3.1)</span></h1>
+      <h1>Dashboard — Estatísticas de Crédito (SGS/BCB) <span style="font-size:12px;color:#92a0b3; font-weight:600;">(web v3.3)</span></h1>
       <div class="sub">3 gráficos por linha • atualização ao abrir • JGP</div>
     </div>
     <div class="status" id="status">Pronto.</div>
@@ -187,7 +187,9 @@
     return Number.isFinite(num) ? num : null;
   }
 
-  function autoPctScaleIfNeeded(chart, seriesPayloads){
+    const PCT_NO_FRACTION_CODES = new Set([27704, 21136]);
+
+function autoPctScaleIfNeeded(chart, seriesPayloads){
     // Alguns códigos do SGS retornam proporção (0.05) em vez de % (5.0).
     // Regra: se o gráfico é de % (level) e o último valor de uma série está entre 0 e 1,
     // então multiplicamos toda a série por 100 para exibir em %.
@@ -198,6 +200,8 @@
       const last = vals[vals.length-1];
       // Se o último valor for menor que 1, é quase certamente fração.
       if(last > 0 && last < 1){
+        // Algumas séries já vêm em % (ex.: 0,48 significa 0,48% e NÃO 48%).
+        if (sp.code && PCT_NO_FRACTION_CODES.has(sp.code)) return sp;
         return {name: sp.name, data: sp.data.map(p => ({date:p.date, value: (p.value==null?null:p.value*100)}))};
       }
       return sp;
@@ -240,7 +244,7 @@
       const raw = await loadSeriesAll(s.code);
       const scaled = applyScale(raw, chart.scale || 1.0);
       const data = chart.start_override ? scaled.filter(p => p.date >= chart.start_override) : scaled;
-      seriesPayloads.push({name:s.name, data});
+      seriesPayloads.push({code:s.code, name:s.name, data});
     }
 
     const seriesPayloads2 = autoPctScaleIfNeeded(chart, seriesPayloads);
