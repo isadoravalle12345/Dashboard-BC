@@ -42,7 +42,7 @@
 <div class="wrap">
   <div class="title">
     <div>
-      <h1>Dashboard — Estatísticas de Crédito (SGS/BCB) <span style="font-size:12px;color:#92a0b3; font-weight:600;">(web v3.3)</span></h1>
+      <h1>Dashboard — Estatísticas de Crédito (SGS/BCB) <span style="font-size:12px;color:#92a0b3; font-weight:600;">(web v3.3.1)</span></h1>
       <div class="sub">3 gráficos por linha • atualização ao abrir • JGP</div>
     </div>
     <div class="status" id="status">Pronto.</div>
@@ -71,7 +71,7 @@
 
   function setStatus(msg){ statusEl.textContent = msg; }
   function fmtBR(x, dec=2, suffix=""){ if(x===null||x===undefined||Number.isNaN(x)) return "—"; return x.toLocaleString('pt-BR', {minimumFractionDigits:dec, maximumFractionDigits:dec})+suffix; }
-  function fmtDateBR(iso){ const d=new Date(iso); return d.toLocaleDateString('pt-BR'); }
+  function fmtDateBR(iso){ if(!iso) return "—"; const parts=String(iso).split('-'); if(parts.length===3){ const y=+parts[0], m=+parts[1], d=+parts[2]; const dt=new Date(y, m-1, d); return dt.toLocaleDateString('pt-BR'); } const dt2=new Date(iso); return isNaN(dt2)? String(iso) : dt2.toLocaleDateString('pt-BR'); }
   function maxIso(a,b){ if(!a) return b; if(!b) return a; return a>b?a:b; }
 
   function yoyPct(values){
